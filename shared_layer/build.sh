@@ -1,21 +1,18 @@
 #!/bin/bash
 set -e
 
-cd "$(dirname "$0")"  # Ensure you're in shared_layer/
+cd "$(dirname "$0")"
 
-# Clean previous builds
 rm -rf python shared_layer.zip
-
-# Create layer folder structure
 mkdir -p python
 
-# Install third-party dependencies
+# Install third-party dependencies to layer
 pip install -r requirements.txt -t python/
 
-# Copy shared/ modules into layer
+# ✅ Copy shared modules inside python/ directory (so import works)
 cp -r ../shared python/
 
-# Zip for Lambda layer upload
+# Zip layer
 zip -r9 shared_layer.zip python
 
 echo "✅ Shared layer built successfully!"
