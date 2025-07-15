@@ -1,18 +1,22 @@
 #!/bin/bash
 set -e
 
-cd "$(dirname "$0")"
-
+echo "🧹 Cleaning previous builds"
 rm -rf python shared_layer.zip
+
+echo "📁 Creating layer folder structure: python/"
 mkdir -p python
 
-# Install third-party dependencies to layer
+echo "📦 Installing third-party dependencies from requirements.txt"
 pip install -r requirements.txt -t python/
 
-# ✅ Copy shared modules inside python/ directory (so import works)
+echo "📂 Copying internal shared modules"
 cp -r ../shared python/
 
-# Zip layer
-zip -r9 shared_layer.zip python
+echo "📦 Zipping layer to shared_layer.zip"
+zip -r9 shared_layer.zip python > /dev/null
 
 echo "✅ Shared layer built successfully!"
+
+echo "🔍 Verifying shared_layer.zip structure..."
+unzip -l shared_layer.zip
