@@ -18,6 +18,7 @@ Resources:
   TenantLambda:
     Type: AWS::Serverless::Function
     Properties:
+      FunctionName: tenant-lambda
       Handler: main.handler
       CodeUri: tenant_lambda/
       Layers:
@@ -28,6 +29,7 @@ Resources:
   MasterDataLambda:
     Type: AWS::Serverless::Function
     Properties:
+      FunctionName: masterdata-lambda
       Handler: main.handler
       CodeUri: masterdata_lambda/
       Layers:
@@ -38,6 +40,7 @@ Resources:
   NetworkFlowLambda:
     Type: AWS::Serverless::Function
     Properties:
+      FunctionName: networkflow-lambda
       Handler: main.handler
       CodeUri: networkflow_lambda/
       Layers:
@@ -48,6 +51,7 @@ Resources:
   RolePermissionLambda:
     Type: AWS::Serverless::Function
     Properties:
+      FunctionName: role-permission-lambda
       Handler: main.handler
       CodeUri: user_role_permission_lambda/
       Layers:
