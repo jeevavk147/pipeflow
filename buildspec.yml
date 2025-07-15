@@ -9,8 +9,7 @@ phases:
       - pip install aws-sam-cli
   pre_build:
     commands:
-      - echo "📦 Installing dependencies"
-      - pip install -r requirements.txt
+      - echo "📦 Skipping global dependency install"
   build:
     commands:
       - echo "🔨 Building SAM Application"
