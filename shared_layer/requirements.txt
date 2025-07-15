@@ -1,0 +1,5 @@
+requests
+python-dotenv
+fastapi
+sqlalchemy
+python-jose
