@@ -22,12 +22,8 @@ Resources:
       CodeUri: tenant_lambda/
       Layers:
         - !Ref SharedLayer
-      Events:
-        TenantAPI:
-          Type: HttpApi
-          Properties:
-            Path: /tenant
-            Method: ANY
+      FunctionUrlConfig:
+        AuthType: NONE
 
   MasterDataLambda:
     Type: AWS::Serverless::Function
@@ -36,12 +32,8 @@ Resources:
       CodeUri: masterdata_lambda/
       Layers:
         - !Ref SharedLayer
-      Events:
-        MasterDataAPI:
-          Type: HttpApi
-          Properties:
-            Path: /masterdata
-            Method: ANY
+      FunctionUrlConfig:
+        AuthType: NONE
 
   NetworkFlowLambda:
     Type: AWS::Serverless::Function
@@ -50,12 +42,8 @@ Resources:
       CodeUri: networkflow_lambda/
       Layers:
         - !Ref SharedLayer
-      Events:
-        FlowAPI:
-          Type: HttpApi
-          Properties:
-            Path: /flow
-            Method: ANY
+      FunctionUrlConfig:
+        AuthType: NONE
 
   RolePermissionLambda:
     Type: AWS::Serverless::Function
@@ -64,9 +52,5 @@ Resources:
       CodeUri: user_role_permission_lambda/
       Layers:
         - !Ref SharedLayer
-      Events:
-        RoleAPI:
-          Type: HttpApi
-          Properties:
-            Path: /role
-            Method: ANY
+      FunctionUrlConfig:
+        AuthType: NONE
