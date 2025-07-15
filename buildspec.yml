@@ -7,17 +7,28 @@ phases:
     commands:
       - echo "✅ Installing AWS SAM CLI"
       - pip install aws-sam-cli
+
   pre_build:
     commands:
-      - echo "📦 Skipping global dependency install"
+      - echo "📦 Building shared layer before SAM build"
+      - cd shared_layer
+      - bash build.sh
+      - cd ..
+
   build:
     commands:
       - echo "🔨 Building SAM Application"
       - sam build
+
   post_build:
     commands:
       - echo "🚀 Deploying stack via SAM"
-      - sam deploy --stack-name pipeflow-stack-v2 --capabilities CAPABILITY_IAM --region ap-south-1 --resolve-s3 --no-fail-on-empty-changeset --no-confirm-changeset
+      - sam deploy --stack-name pipeflow-stack-v2 \
+                   --capabilities CAPABILITY_IAM \
+                   --region ap-south-1 \
+                   --resolve-s3 \
+                   --no-fail-on-empty-changeset \
+                   --no-confirm-changeset
 
 artifacts:
   files:
