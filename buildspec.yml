@@ -22,13 +22,16 @@ phases:
 
   post_build:
     commands:
-      - echo "🚀 Deploying stack via SAM"
-      - sam deploy --stack-name pipeflow-stack-v2 \
-                   --capabilities CAPABILITY_IAM \
-                   --region ap-south-1 \
-                   --resolve-s3 \
-                   --no-fail-on-empty-changeset \
-                   --no-confirm-changeset
+    - echo "🚀 Deploying stack via SAM"
+    - >
+      sam deploy
+      --stack-name pipeflow-stack-v2
+      --capabilities CAPABILITY_IAM
+      --region ap-south-1
+      --resolve-s3
+      --no-fail-on-empty-changeset
+      --no-confirm-changeset
+
 
 artifacts:
   files:
