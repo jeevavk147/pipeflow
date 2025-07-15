@@ -3,3 +3,7 @@ python-dotenv
 fastapi
 sqlalchemy
 python-jose
+pydantic
+typing
+datetime
+dotenv

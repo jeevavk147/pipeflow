@@ -4,6 +4,10 @@ from dotenv import load_dotenv
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy import create_engine
+import uuid
+from datetime import datetime
+from typing import Optional
+from pydantic import BaseModel, EmailStr
 
 class TenantBase(BaseModel):
     tenant_id: str
