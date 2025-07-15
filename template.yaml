@@ -11,7 +11,7 @@ Resources:
     Type: AWS::Serverless::LayerVersion
     Properties:
       LayerName: pipeflow-shared-layer
-      ContentUri: shared_layer/python
+      ContentUri: shared_layer/shared_layer.zip
       CompatibleRuntimes:
         - python3.11
 
