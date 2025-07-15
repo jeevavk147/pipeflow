@@ -21,10 +21,12 @@ phases:
 
   post_build:
     commands:
-      - echo "🚀 Deploying stack via SAM"
-      - sam deploy \
-          --stack-name pipeflow-stack \
-          --capabilities CAPABILITY_IAM \
-          --region ap-south-1 \
-          --no-fail-on-empty-changeset \
-          --no-confirm-changeset
+    - echo "🚀 Deploying stack via SAM"
+    - >
+      sam deploy
+      --stack-name pipeflow-stack
+      --capabilities CAPABILITY_IAM
+      --region ap-south-1
+      --no-fail-on-empty-changeset
+      --no-confirm-changeset
+
