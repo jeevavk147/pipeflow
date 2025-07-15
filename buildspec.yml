@@ -5,28 +5,27 @@ phases:
     runtime-versions:
       python: 3.11
     commands:
+      - echo "✅ Installing SAM CLI"
       - pip install aws-sam-cli
-
   pre_build:
     commands:
-      - echo "🔧 Building shared Lambda layer"
-      - cd shared_layer
-      - bash build.sh
-      - cd ..
-
+      - echo "📦 Installing dependencies"
+      - pip install -r requirements.txt
   build:
     commands:
-      - echo "🚀 Building FastAPI Lambdas"
+      - echo "🔨 Building SAM Application"
       - sam build
-
   post_build:
     commands:
-    - >
-      sam deploy
-      --stack-name pipeflow-stack
-      --capabilities CAPABILITY_IAM
-      --region ap-south-1
-      --resolve-s3
-      --no-fail-on-empty-changeset
-      --no-confirm-changeset
+      - echo "🚀 Deploying stack via SAM"
+      - sam deploy \
+          --stack-name pipeflow-stack-v2 \
+          --capabilities CAPABILITY_IAM \
+          --region ap-south-1 \
+          --resolve-s3 \
+          --no-fail-on-empty-changeset \
+          --no-confirm-changeset
 
+artifacts:
+  files:
+    - template.yaml
