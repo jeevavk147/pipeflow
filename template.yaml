@@ -1,0 +1,72 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+
+Globals:
+  Function:
+    Runtime: python3.11
+    Timeout: 30
+
+Resources:
+  SharedLayer:
+    Type: AWS::Serverless::LayerVersion
+    Properties:
+      LayerName: pipeflow-shared-layer
+      ContentUri: shared_layer/python
+      CompatibleRuntimes:
+        - python3.11
+
+  TenantLambda:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: main.handler
+      CodeUri: tenant_lambda/
+      Layers:
+        - !Ref SharedLayer
+      Events:
+        TenantAPI:
+          Type: HttpApi
+          Properties:
+            Path: /tenant
+            Method: ANY
+
+  MasterDataLambda:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: main.handler
+      CodeUri: masterdata_lambda/
+      Layers:
+        - !Ref SharedLayer
+      Events:
+        MasterDataAPI:
+          Type: HttpApi
+          Properties:
+            Path: /masterdata
+            Method: ANY
+
+  NetworkFlowLambda:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: main.handler
+      CodeUri: networkflow_lambda/
+      Layers:
+        - !Ref SharedLayer
+      Events:
+        FlowAPI:
+          Type: HttpApi
+          Properties:
+            Path: /flow
+            Method: ANY
+
+  RolePermissionLambda:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: main.handler
+      CodeUri: user_role_permission_lambda/
+      Layers:
+        - !Ref SharedLayer
+      Events:
+        RoleAPI:
+          Type: HttpApi
+          Properties:
+            Path: /role
+            Method: ANY
