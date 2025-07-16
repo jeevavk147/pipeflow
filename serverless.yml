@@ -32,37 +32,29 @@ functions:
     handler: masterdata_lambda/main.handler
     layers:
       - { Ref: SharedLambdaLayer }
-    events:
-      - httpApi:
-          path: /masterdata/{proxy+}
-          method: ANY
+    functionUrl:  # Enable direct Lambda URL
+      authType: NONE
 
   networkflow:
     handler: networkflow_lambda/main.handler
     layers:
       - { Ref: SharedLambdaLayer }
-    events:
-      - httpApi:
-          path: /network-flow/{proxy+}
-          method: ANY
+    functionUrl:
+      authType: NONE
 
   tenant:
     handler: tenant_lambda/main.handler
     layers:
       - { Ref: SharedLambdaLayer }
-    events:
-      - httpApi:
-          path: /tenant/{proxy+}
-          method: ANY
+    functionUrl:
+      authType: NONE
 
   userrole:
     handler: user_role_permission_lambda/main.handler
     layers:
       - { Ref: SharedLambdaLayer }
-    events:
-      - httpApi:
-          path: /user/{proxy+}
-          method: ANY
+    functionUrl:
+      authType: NONE
 
 plugins:
   - serverless-python-requirements

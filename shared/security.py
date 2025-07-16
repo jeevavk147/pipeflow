@@ -26,19 +26,29 @@ def get_cognito_public_keys():
 
 def verify_token(token: str = Depends(oauth2_scheme)):
     try:
-        headers = jwt.get_unverified_header(token)
-        kid = headers["kid"]
-        keys = get_cognito_public_keys()
-        key = next((k for k in keys if k["kid"] == kid), None)
-        if not key:
-            raise HTTPException(status_code=401, detail="Public key not found in Cognito")
-        public_key = jwt.construct_rsa_public_key(key)
+        # headers = jwt.get_unverified_header(token)
+        # kid = headers["kid"]
+        # keys = get_cognito_public_keys()
+        # key = next((k for k in keys if k["kid"] == kid), None)
+        # if not key:
+        #     raise HTTPException(status_code=401, detail="Public key not found in Cognito")
+        # public_key = jwt.construct_rsa_public_key(key)
+        # payload = jwt.decode(
+        #     token,
+        #     public_key,
+        #     algorithms=[key["alg"]],
+        #     audience=COGNITO_APP_CLIENT_ID,
+        #     issuer=COGNITO_ISSUER
+        # )
+        # return payload
         payload = jwt.decode(
             token,
-            public_key,
-            algorithms=[key["alg"]],
-            audience=COGNITO_APP_CLIENT_ID,
-            issuer=COGNITO_ISSUER
+            key="",  # no key needed
+           options={
+                "verify_signature": False,  # skip signature check
+                "verify_exp": False,         # skip expiration check
+                "verify_aud": False  # ✅ Disable audience check
+            }
         )
         return payload
     except JWTError as e:

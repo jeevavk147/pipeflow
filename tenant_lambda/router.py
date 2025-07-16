@@ -7,14 +7,15 @@ from shared.schemas import TenantOut
 import boto3
 import os
 from sqlalchemy import create_engine, text
-
-s3_client = boto3.client(
-    's3',
-    aws_access_key_id=os.getenv('AWS_ACCESS_KEY_ID'),
-    aws_secret_access_key=os.getenv('AWS_SECRET_ACCESS_KEY'),
-    region_name=os.getenv('AWS_REGION')
-)
-S3_BUCKET = os.getenv('AWS_S3_BUCKET')
+from datetime import datetime
+import uuid
+# s3_client = boto3.client(
+#     's3',
+#     aws_access_key_id=os.getenv('AWS_ACCESS_KEY_ID'),
+#     aws_secret_access_key=os.getenv('AWS_SECRET_ACCESS_KEY'),
+#     region_name=os.getenv('AWS_REGION')
+# )
+# S3_BUCKET = os.getenv('AWS_S3_BUCKET')
 
 router = APIRouter()
 
@@ -29,14 +30,17 @@ async def create_tenant(
     if db_tenant:
         raise HTTPException(status_code=409, detail="Tenant ID in use")
     logo_url = None
-    if logo:
-        s3_key = f"tenant_logos/{tenant_id}_{logo.filename}"
-        s3_client.upload_fileobj(logo.file, S3_BUCKET, s3_key, ExtraArgs={"ACL": "public-read"})
-        logo_url = f"https://{S3_BUCKET}.s3.amazonaws.com/{s3_key}"
+    # if logo:
+    #     s3_key = f"tenant_logos/{tenant_id}_{logo.filename}"
+    #     s3_client.upload_fileobj(logo.file, S3_BUCKET, s3_key, ExtraArgs={"ACL": "public-read"})
+    #     logo_url = f"https://{S3_BUCKET}.s3.amazonaws.com/{s3_key}"
     new_tenant = Tenant(
         tenant_id=tenant_id,
         company_name=company_name,
-        logo_url=logo_url
+        logo_url=logo_url,
+        created_by=uuid.uuid4(),  # Assuming created_by is a UUID
+        created_at=datetime.utcnow(),
+        
     )
     db.add(new_tenant)
     db.commit()
@@ -107,8 +111,8 @@ async def create_tenant(
             modified_by UUID
         )'''
     ]
-    with tenant_engine.connect() as conn:
-        for stmt in create_table_sql:
-            conn.execute(text(stmt))
+    with tenant_engine.begin() as conn:
+     for stmt in create_table_sql:
+        conn.execute(text(stmt))
 
     return new_tenant

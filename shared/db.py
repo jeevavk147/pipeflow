@@ -4,7 +4,8 @@ from dotenv import load_dotenv
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy import create_engine
-
+from shared.security import verify_token
+from fastapi import HTTPException, Depends
 load_dotenv()
 
 Base = declarative_base()
@@ -19,15 +20,13 @@ def get_tenant_engine(tenant_db_name: str):
     url = f"postgresql+psycopg2://{os.getenv('POSTGRES_USER')}:{os.getenv('POSTGRES_PASSWORD')}@{os.getenv('POSTGRES_SERVER')}:{os.getenv('POSTGRES_PORT')}/{tenant_db_name}"
     return create_engine(url, pool_pre_ping=True)
 
-from fastapi import Depends, Request
-def get_db(request: Request):
-    tenant_id = request.headers.get('X-Tenant-ID')
-    if tenant_id:
-        engine = get_tenant_engine(f"pipeflow_tenant_{tenant_id}")
-        SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-        db = SessionLocal()
-    else:
-        db = GlobalSessionLocal()
+def get_db(token: dict = Depends(verify_token)):
+    tenant_id = token.get("custom:tenant_id")
+    if not tenant_id:
+        raise HTTPException(status_code=400, detail="Tenant ID missing in token")
+    engine = get_tenant_engine(tenant_id)
+    SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+    db = SessionLocal()
     try:
         yield db
     finally:

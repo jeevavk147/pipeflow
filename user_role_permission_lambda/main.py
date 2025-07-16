@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from shared import models, schemas, db, security
-from user_role_permission_lambda import router as user_router
+from user_role_permission_lambda.router import router as user_router
 
 app = FastAPI()
 app.include_router(user_router)

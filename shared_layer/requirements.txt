@@ -7,3 +7,5 @@ pydantic
 typing
 datetime
 dotenv
+email-validator
+alembic

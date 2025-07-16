@@ -30,7 +30,7 @@ class TenantOut(TenantBase):
 class UserBase(BaseModel):
     name: str
     email: EmailStr
-    role_id: uuid.UUID
+    # role_id: uuid.UUID
 
 class UserCreate(UserBase):
     pass

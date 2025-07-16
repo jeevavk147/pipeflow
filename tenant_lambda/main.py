@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from shared import models, schemas, db, security
-from tenant_lambda import router as tenant_router
+from tenant_lambda.router import router as tenant_router
+
 
 app = FastAPI()
 app.include_router(tenant_router)

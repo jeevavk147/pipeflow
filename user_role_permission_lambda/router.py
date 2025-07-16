@@ -6,19 +6,27 @@ from shared.models import User, Role, Permission, RolePermission
 from shared.schemas import UserCreate, UserOut, RoleCreate, RoleOut, PermissionCreate, PermissionOut, RolePermissionCreate, RolePermissionOut
 from shared.security import verify_token
 import uuid
+from datetime import datetime
 
 router = APIRouter()
 
 # --- USER CRUD ---
 @router.post("/user/createUser", response_model=UserOut)
 def create_user(user: UserCreate, db: Session = Depends(get_db), token: dict = Depends(verify_token)):
-    tenant_id = token.get("tenant_id")
+    tenant_id = token.get("custom:tenant_id")
+    user_id = token.get("sub")
     if not tenant_id:
         raise HTTPException(status_code=401, detail="Invalid token: tenant_id missing")
-    db_user = db.query(User).filter(User.email == user.email).first()
+    db_user = db.query(User).filter(User.email == user.email or User.id == user_id).first()
     if db_user:
-        raise HTTPException(status_code=409, detail="Email already exists")
+        raise HTTPException(status_code=409, detail="User already exists")
     new_user = User(**user.dict())
+    new_user.id =  user_id
+    new_user.is_active = True
+    new_user.created_at = datetime.utcnow()
+    new_user.created_by = user_id
+    new_user.modified_at = None
+    new_user.modified_by = None
     db.add(new_user)
     db.commit()
     db.refresh(new_user)
@@ -26,8 +34,8 @@ def create_user(user: UserCreate, db: Session = Depends(get_db), token: dict = D
 
 @router.get("/user/getUser", response_model=UserOut)
 def get_user(db: Session = Depends(get_db), token: dict = Depends(verify_token)):
-    tenant_id = token.get("tenant_id")
-    user_id = token.get("user_id")
+    tenant_id = token.get("custom:tenant_id")
+    user_id = token.get("sub")
     if not tenant_id or not user_id:
         raise HTTPException(status_code=401, detail="Invalid token: tenant_id or user_id missing")
     user = db.query(User).filter(User.id == user_id).first()
@@ -37,8 +45,8 @@ def get_user(db: Session = Depends(get_db), token: dict = Depends(verify_token))
 
 @router.put("/user/updateUser", response_model=UserOut)
 def update_user(user: UserCreate, db: Session = Depends(get_db), token: dict = Depends(verify_token)):
-    tenant_id = token.get("tenant_id")
-    user_id = token.get("user_id")
+    tenant_id = token.get("custom:tenant_id")
+    user_id = token.get("sub")
     if not tenant_id or not user_id:
         raise HTTPException(status_code=401, detail="Invalid token: tenant_id or user_id missing")
     db_user = db.query(User).filter(User.id == user_id).first()
@@ -50,23 +58,23 @@ def update_user(user: UserCreate, db: Session = Depends(get_db), token: dict = D
     db.refresh(db_user)
     return db_user
 
-@router.delete("/user/deleteUser", status_code=204)
+@router.delete("/user/deleteUser", status_code=200) 
 def delete_user(db: Session = Depends(get_db), token: dict = Depends(verify_token)):
-    tenant_id = token.get("tenant_id")
-    user_id = token.get("user_id")
+    tenant_id = token.get("custom:tenant_id")
+    user_id = token.get("sub")
     if not tenant_id or not user_id:
         raise HTTPException(status_code=401, detail="Invalid token: tenant_id or user_id missing")
-    db_user = db.query(User).filter(User.id == user_id).first()
+    db_user = db.query(User).filter(User.id == user_id or User.id==user_id).first()
     if not db_user:
         raise HTTPException(status_code=404, detail="User not found")
     db_user.is_active = False
     db.commit()
-    return
+    return {"message": "User deactivated successfully"}
 
 @router.get("/user/all", response_model=list[UserOut])
 def get_all_users(db: Session = Depends(get_db), token: dict = Depends(verify_token)):
-    tenant_id = token.get("tenant_id")
-    user_id = token.get("user_id")
+    tenant_id = token.get("custom:tenant_id")
+    user_id = token.get("sub")
     role = token.get("role")
     if not tenant_id or not user_id or not role:
         raise HTTPException(status_code=401, detail="Invalid token: tenant_id, user_id, or role missing")
@@ -76,8 +84,8 @@ def get_all_users(db: Session = Depends(get_db), token: dict = Depends(verify_to
 # --- ROLE CRUD ---
 @router.post("/role/create", response_model=RoleOut)
 def create_role(role: RoleCreate, db: Session = Depends(get_db), token: dict = Depends(verify_token)):
-    tenant_id = token.get("tenant_id")
-    user_id = token.get("user_id")
+    tenant_id = token.get("custom:tenant_id")
+    user_id = token.get("sub")
     role_name = token.get("role")
     if not tenant_id or not user_id or not role_name:
         raise HTTPException(status_code=401, detail="Invalid token: tenant_id, user_id, or role missing")
