@@ -1,6 +1,6 @@
 service: pipeflow
 
-frameworkVersion: '3'
+frameworkVersion: '3.38.0'  # or any stable v3 version
 
 provider:
   name: aws
