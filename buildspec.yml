@@ -7,7 +7,7 @@ phases:
       nodejs: 18  # ✅ REQUIRED for Serverless Framework
     commands:
       - echo "✅ Installing Serverless Framework CLI"
-      - npm install -g serverless
+      - npm install -g serverless@3.38.0
       - pip install -r shared_layer/requirements.txt
 
   pre_build:
