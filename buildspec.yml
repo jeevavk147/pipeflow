@@ -5,34 +5,27 @@ phases:
     runtime-versions:
       python: 3.11
     commands:
-      - echo "✅ Installing AWS SAM CLI"
-      - pip install aws-sam-cli
+      - echo "✅ Installing Serverless Framework CLI"
+      - npm install -g serverless
+      - pip install -r shared_layer/requirements.txt
 
   pre_build:
     commands:
-      - echo "📦 Building shared layer before SAM build"
+      - echo "📦 Building shared layer before Serverless deploy"
       - cd shared_layer
       - bash build.sh
       - cd ..
 
   build:
     commands:
-      - echo "🔨 Building SAM Application"
-      - sam build
+      - echo "🔨 No separate build step needed for Serverless Framework"
 
   post_build:
     commands:
-    - echo "🚀 Deploying stack via SAM"
-    - >
-      sam deploy
-      --stack-name pipeflow-stack-v2
-      --capabilities CAPABILITY_IAM
-      --region ap-south-1
-      --resolve-s3
-      --no-fail-on-empty-changeset
-      --no-confirm-changeset
+      - echo "🚀 Deploying stack via Serverless Framework"
+      - serverless deploy --stage dev --region ap-south-1
 
 
 artifacts:
   files:
-    - template.yaml
+    - serverless.yml

@@ -1,0 +1,69 @@
+service: pipeflow
+
+frameworkVersion: '3'
+
+provider:
+  name: aws
+  runtime: python3.11
+  region: ap-south-1
+  stage: dev
+  environment:
+    COGNITO_REGION: ${env:COGNITO_REGION}
+    COGNITO_USERPOOL_ID: ${env:COGNITO_USERPOOL_ID}
+    COGNITO_APP_CLIENT_ID: ${env:COGNITO_APP_CLIENT_ID}
+    POSTGRES_USER: ${env:POSTGRES_USER}
+    POSTGRES_PASSWORD: ${env:POSTGRES_PASSWORD}
+    POSTGRES_SERVER: ${env:POSTGRES_SERVER}
+    POSTGRES_PORT: ${env:POSTGRES_PORT}
+    POSTGRES_DB: ${env:POSTGRES_DB}
+    AWS_ACCESS_KEY_ID: ${env:AWS_ACCESS_KEY_ID}
+    AWS_SECRET_ACCESS_KEY: ${env:AWS_SECRET_ACCESS_KEY}
+    AWS_REGION: ${env:AWS_REGION}
+    AWS_S3_BUCKET: ${env:AWS_S3_BUCKET}
+
+layers:
+  shared:
+    path: shared_layer
+    compatibleRuntimes:
+      - python3.11
+
+functions:
+  masterdata:
+    handler: masterdata_lambda/main.handler
+    layers:
+      - { Ref: SharedLambdaLayer }
+    events:
+      - httpApi:
+          path: /masterdata/{proxy+}
+          method: ANY
+
+  networkflow:
+    handler: networkflow_lambda/main.handler
+    layers:
+      - { Ref: SharedLambdaLayer }
+    events:
+      - httpApi:
+          path: /network-flow/{proxy+}
+          method: ANY
+
+  tenant:
+    handler: tenant_lambda/main.handler
+    layers:
+      - { Ref: SharedLambdaLayer }
+    events:
+      - httpApi:
+          path: /tenant/{proxy+}
+          method: ANY
+
+  userrole:
+    handler: user_role_permission_lambda/main.handler
+    layers:
+      - { Ref: SharedLambdaLayer }
+    events:
+      - httpApi:
+          path: /user/{proxy+}
+          method: ANY
+
+plugins:
+  - serverless-python-requirements
+  - serverless-dotenv-plugin
