@@ -4,6 +4,7 @@ phases:
   install:
     runtime-versions:
       python: 3.11
+      nodejs: 18  # ✅ REQUIRED for Serverless Framework
     commands:
       - echo "✅ Installing Serverless Framework CLI"
       - npm install -g serverless
@@ -24,7 +25,6 @@ phases:
     commands:
       - echo "🚀 Deploying stack via Serverless Framework"
       - serverless deploy --stage dev --region ap-south-1
-
 
 artifacts:
   files:
